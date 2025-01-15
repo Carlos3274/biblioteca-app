@@ -3,6 +3,7 @@ package com.zecacompany.biblioteca.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Service
 public class EmailValidationService {
@@ -23,14 +24,30 @@ public class EmailValidationService {
     public boolean validarEmail(String email) {
         String url = obterUrlRequisicao(EMAIL_VALIDATION_URL, apiToken, email);
         EmailValidationResponse response = restTemplate.getForObject(url, EmailValidationResponse.class);
-
-        return response != null && response.isValidFormat() && response.isValidMx() && !response.isDisposable();
+        return response != null && response.isValidFormat() && response.isValidMx();
     }
 
+
     public static class EmailValidationResponse {
+        @JsonProperty("email")
+        private String email;
+
+        @JsonProperty("valid_format")
         private boolean validFormat;
+
+        @JsonProperty("valid_mx")
         private boolean validMx;
+
+        @JsonProperty("disposable")
         private boolean disposable;
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
 
         public boolean isValidFormat() {
             return validFormat;
@@ -56,5 +73,6 @@ public class EmailValidationService {
             this.disposable = disposable;
         }
     }
+
 }
 

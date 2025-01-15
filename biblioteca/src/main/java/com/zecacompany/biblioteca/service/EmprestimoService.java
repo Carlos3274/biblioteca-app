@@ -3,6 +3,7 @@ package com.zecacompany.biblioteca.service;
 import com.zecacompany.biblioteca.domain.Emprestimo;
 import com.zecacompany.biblioteca.domain.Livro;
 import com.zecacompany.biblioteca.domain.Usuario;
+import com.zecacompany.biblioteca.dto.RelatorioEmprestimoDTO;
 import com.zecacompany.biblioteca.repository.EmprestimoRepository;
 import com.zecacompany.biblioteca.repository.LivroRepository;
 import com.zecacompany.biblioteca.repository.UsuarioRepository;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Service
 public class EmprestimoService {
@@ -77,5 +79,16 @@ public class EmprestimoService {
         return calendar.getTime();
     }
 
+    public List<RelatorioEmprestimoDTO> gerarRelatorioEmprestimos() {
+        List<Emprestimo> emprestimos = emprestimoRepository.findAll();
 
+        return emprestimos.stream()
+                .map(emprestimo -> new RelatorioEmprestimoDTO(
+                        emprestimo.getUsuario().getNome(),
+                        emprestimo.getLivro().getTitulo(),
+                        emprestimo.getDataEmprestimo(),
+                        emprestimo.getDataDevolucao()
+                ))
+                .collect(Collectors.toList());
+    }
 }
